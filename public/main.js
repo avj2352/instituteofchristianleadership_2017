@@ -59,7 +59,7 @@
 /******/ 	
 /******/ 	
 /******/ 	var hotApplyOnUpdate = true;
-/******/ 	var hotCurrentHash = "54590d9d4695cb443e14"; // eslint-disable-line no-unused-vars
+/******/ 	var hotCurrentHash = "cdadfcd65d885fce17d1"; // eslint-disable-line no-unused-vars
 /******/ 	var hotCurrentModuleData = {};
 /******/ 	var hotCurrentChildModule; // eslint-disable-line no-unused-vars
 /******/ 	var hotCurrentParents = []; // eslint-disable-line no-unused-vars
@@ -11561,10 +11561,11 @@ var inputValueTracking = {
 
     var currentValue = '' + node[valueField];
 
-    // if someone has already defined a value bail and don't track value
-    // will cause over reporting of changes, but it's better then a hard failure
-    // (needed for certain tests that spyOn input values)
-    if (node.hasOwnProperty(valueField)) {
+    // if someone has already defined a value or Safari, then bail
+    // and don't track value will cause over reporting of changes,
+    // but it's better then a hard failure
+    // (needed for certain tests that spyOn input values and Safari)
+    if (node.hasOwnProperty(valueField) || typeof descriptor.get !== 'function' || typeof descriptor.set !== 'function') {
       return;
     }
 
@@ -14012,7 +14013,7 @@ _reactDom2.default.render(_react2.default.createElement(_App2.default, null), do
 /* 122 */
 /***/ (function(module, exports, __webpack_require__) {
 
-/* WEBPACK VAR INJECTION */(function(__resourceQuery) {/* global __resourceQuery */
+/* WEBPACK VAR INJECTION */(function(__resourceQuery) {/* global __resourceQuery WorkerGlobalScope */
 var url = __webpack_require__(282);
 var stripAnsi = __webpack_require__(280);
 var socket = __webpack_require__(285);
@@ -14061,7 +14062,11 @@ function log(level, msg) {
 
 // Send messages to the outside, so plugins can consume it.
 function sendMsg(type, data) {
-	if(typeof self !== "undefined" && self.window) {
+	if(
+		typeof self !== "undefined" &&
+		(typeof WorkerGlobalScope === "undefined" ||
+		!(self instanceof WorkerGlobalScope))
+	) {
 		self.postMessage({
 			type: "webpack" + type,
 			data: data
@@ -14117,7 +14122,7 @@ var onSocketMsg = {
 		});
 		sendMsg("Warnings", strippedWarnings);
 		for(var i = 0; i < strippedWarnings.length; i++)
-			console.warn(strippedWarnings[i]);
+			log("warning", strippedWarnings[i]);
 		if(useWarningOverlay) overlay.showMessage(warnings);
 
 		if(initial) return initial = false;
@@ -14130,7 +14135,7 @@ var onSocketMsg = {
 		});
 		sendMsg("Errors", strippedErrors);
 		for(var i = 0; i < strippedErrors.length; i++)
-			console.error(strippedErrors[i]);
+			log("error", strippedErrors[i]);
 		if(useErrorOverlay) overlay.showMessage(errors);
 	},
 	error: function(error) {
@@ -19066,10 +19071,6 @@ if (process.env.NODE_ENV !== 'production') {
    * @param {ReactDOMComponent} component
    */
   var warnValidStyle = function (name, value, component) {
-    // Don't warn for CSS variables
-    if (name.indexOf('--') === 0) {
-      return;
-    }
     var owner;
     if (component) {
       owner = component._currentElement._owner;
@@ -19111,13 +19112,16 @@ var CSSPropertyOperations = {
       if (!styles.hasOwnProperty(styleName)) {
         continue;
       }
+      var isCustomProperty = styleName.indexOf('--') === 0;
       var styleValue = styles[styleName];
       if (process.env.NODE_ENV !== 'production') {
-        warnValidStyle(styleName, styleValue, component);
+        if (!isCustomProperty) {
+          warnValidStyle(styleName, styleValue, component);
+        }
       }
       if (styleValue != null) {
         serialized += processStyleName(styleName) + ':';
-        serialized += dangerousStyleValue(styleName, styleValue, component) + ';';
+        serialized += dangerousStyleValue(styleName, styleValue, component, isCustomProperty) + ';';
       }
     }
     return serialized || null;
@@ -19145,14 +19149,17 @@ var CSSPropertyOperations = {
       if (!styles.hasOwnProperty(styleName)) {
         continue;
       }
+      var isCustomProperty = styleName.indexOf('--') === 0;
       if (process.env.NODE_ENV !== 'production') {
-        warnValidStyle(styleName, styles[styleName], component);
+        if (!isCustomProperty) {
+          warnValidStyle(styleName, styles[styleName], component);
+        }
       }
-      var styleValue = dangerousStyleValue(styleName, styles[styleName], component);
+      var styleValue = dangerousStyleValue(styleName, styles[styleName], component, isCustomProperty);
       if (styleName === 'float' || styleName === 'cssFloat') {
         styleName = styleFloatAccessor;
       }
-      if (styleName.indexOf('--') === 0) {
+      if (isCustomProperty) {
         style.setProperty(styleName, styleValue);
       } else if (styleValue) {
         style[styleName] = styleValue;
@@ -25940,7 +25947,7 @@ module.exports = ReactServerUpdateQueue;
 
 
 
-module.exports = '15.6.0';
+module.exports = '15.6.1';
 
 /***/ }),
 /* 202 */
@@ -27340,7 +27347,7 @@ var styleWarnings = {};
  * @param {ReactDOMComponent} component
  * @return {string} Normalized style value with dimensions applied.
  */
-function dangerousStyleValue(name, value, component) {
+function dangerousStyleValue(name, value, component, isCustomProperty) {
   // Note that we've removed escapeTextForBrowser() calls here since the
   // whole string will be escaped when the attribute is injected into
   // the markup. If you provide unsafe user data here they can inject
@@ -27357,7 +27364,7 @@ function dangerousStyleValue(name, value, component) {
   }
 
   var isNonNumeric = isNaN(value);
-  if (isNonNumeric || value === 0 || isUnitlessNumber.hasOwnProperty(name) && isUnitlessNumber[name]) {
+  if (isCustomProperty || isNonNumeric || value === 0 || isUnitlessNumber.hasOwnProperty(name) && isUnitlessNumber[name]) {
     return '' + value; // cast to string
   }
 
@@ -28351,7 +28358,7 @@ var App = function (_Component) {
                 _react2.default.createElement(
                     'p',
                     null,
-                    'This is a React App...!'
+                    'INSTITUE OF CHRISTIAN LEADERSHIP'
                 )
             );
         } //end:render
@@ -29300,7 +29307,7 @@ module.exports = ReactPropTypesSecret;
 
 
 
-module.exports = '15.6.0';
+module.exports = '15.6.1';
 
 /***/ }),
 /* 248 */

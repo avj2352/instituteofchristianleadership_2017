@@ -1,6 +1,6 @@
 import React,{Component} from 'react';
 
-class App extends Component{
+class Header extends Component{
     constructor(){
         super();
     }//end:constructor
@@ -12,6 +12,6 @@ class App extends Component{
             </div>
         );
     }//end:render
-}//end:class-App
+}//end:class-Header
 
-export default App;
+export default Header;
