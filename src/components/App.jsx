@@ -8,7 +8,7 @@ class App extends Component{
     render(){
         return(
             <div>
-                <p>This is a React App...!!!</p>
+                <p>INSTITUE OF CHRISTIAN LEADERSHIP</p>
             </div>
         );
     }//end:render

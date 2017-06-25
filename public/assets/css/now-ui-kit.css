@@ -2975,8 +2975,6 @@ Created using IcoMoon - icomoon.io
 
 .index-page .page-header {
   height: 125vh; }
-.index-page .page-header .container > .content-center {
-  top: 37%; }
 .index-page .page-header .category-absolute {
   position: absolute;
   top: 100vh;
@@ -3192,7 +3190,7 @@ Created using IcoMoon - icomoon.io
 
 .page-header {
   height: 100vh;
-  max-height: 1050px;
+  max-height: 500px;
   padding: 0;
   color: #FFFFFF;
   position: relative;
