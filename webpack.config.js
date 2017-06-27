@@ -11,7 +11,7 @@ module.exports = {
     ]
   },
   output: {
-    filename: '[name].js',
+    filename: 'main.js',
     path: path.join(__dirname, 'public'),
     publicPath: '/public/'
   },
